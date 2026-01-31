@@ -48,7 +48,7 @@ export function WorkflowDiagram({
   }, [nodes, edges]);
 
   // Cytoscape 스타일 정의
-  const stylesheet: cytoscape.Stylesheet[] = useMemo(
+  const stylesheet = useMemo(
     () => [
       // 기본 노드 스타일
       {
@@ -110,7 +110,7 @@ export function WorkflowDiagram({
           'text-background-padding': '3px',
         },
       },
-    ],
+    ] as any,
     []
   );
 

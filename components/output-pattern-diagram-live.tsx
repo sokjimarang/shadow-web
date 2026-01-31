@@ -112,12 +112,7 @@ function resolveIconKey(label: string, app?: string, type?: string) {
   return 'process';
 }
 
-interface CustomNodeData {
-  label: string;
-  app?: string;
-}
-
-const CustomNode = memo(({ data, type }: NodeProps<CustomNodeData>) => {
+const CustomNode = memo(({ data, type }: NodeProps<PatternNode>) => {
   const iconKey = resolveIconKey(data.label ?? '', data.app, type);
 
   return (
@@ -148,7 +143,7 @@ const CustomNode = memo(({ data, type }: NodeProps<CustomNodeData>) => {
 
 CustomNode.displayName = 'CustomNode';
 
-const InputNode = memo(({ data, type }: NodeProps) => {
+const InputNode = memo(({ data, type }: NodeProps<PatternNode>) => {
   const iconKey = resolveIconKey(data.label ?? '', data.app, type);
 
   return (
@@ -185,7 +180,7 @@ const InputNode = memo(({ data, type }: NodeProps) => {
 
 InputNode.displayName = 'InputNode';
 
-const OutputNode = memo(({ data, type }: NodeProps) => {
+const OutputNode = memo(({ data, type }: NodeProps<PatternNode>) => {
   const iconKey = resolveIconKey(data.label ?? '', data.app, type);
 
   return (
