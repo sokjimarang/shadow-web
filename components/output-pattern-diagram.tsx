@@ -28,7 +28,7 @@ export function OutputPatternDiagram({
 
   return (
     <div
-      className={`h-[500px] w-full border border-border rounded-lg bg-white ${className}`}
+      className={`h-[500px] w-full border border-border rounded-lg bg-background ${className}`}
     >
       <ReactFlow
         nodes={nodesState}
@@ -37,23 +37,26 @@ export function OutputPatternDiagram({
         onEdgesChange={onEdgesChange}
         fitView
         defaultEdgeOptions={{
-          style: { stroke: 'hsl(222 25% 25%)', strokeWidth: 2 },
+          style: {
+            stroke: 'var(--color-primary)',
+            strokeWidth: 2,
+          },
         }}
         nodesDraggable={false}
         nodesConnectable={false}
         elementsSelectable={true}
       >
-        <Controls className="bg-white border-border" />
+        <Controls className="bg-background border-border" />
         <MiniMap
-          nodeColor="hsl(222 25% 25%)"
-          maskColor="hsl(222 25% 95% / 0.8)"
-          className="bg-white border-border"
+          nodeColor="var(--color-primary)"
+          maskColor="var(--color-primary-lighter)"
+          className="bg-background border-border"
         />
         <Background
           variant={BackgroundVariant.Dots}
           gap={12}
           size={1}
-          color="hsl(222 15% 85%)"
+          color="var(--color-border)"
         />
       </ReactFlow>
     </div>
