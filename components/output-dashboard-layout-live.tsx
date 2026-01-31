@@ -36,7 +36,13 @@ export function OutputDashboardLayoutLive({ output }: OutputDashboardLayoutLiveP
             </div>
           </CardHeader>
           <CardContent>
-            <WorkflowDiagram nodes={pattern.nodes} edges={pattern.edges} isLive={true} />
+            {pattern.nodes.length > 0 ? (
+              <WorkflowDiagram nodes={pattern.nodes} edges={pattern.edges} isLive={true} />
+            ) : (
+              <div className="h-[400px] flex items-center justify-center text-muted-foreground">
+                <p>분석 결과가 없습니다. 충분한 데이터를 수집한 후 다시 시도해주세요.</p>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -67,7 +73,9 @@ export function OutputDashboardLayoutLive({ output }: OutputDashboardLayoutLiveP
                 dangerouslySetInnerHTML={{ __html: result.content }}
               />
             ) : (
-              <div className="whitespace-pre-wrap text-sm">{result.content}</div>
+              <div className="p-4 bg-muted/50 rounded-lg text-center text-muted-foreground">
+                {result.content}
+              </div>
             )}
           </CardContent>
         </Card>

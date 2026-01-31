@@ -57,15 +57,21 @@ export function useShadowLive(): UseShadowLiveReturn {
       const hasLabels = (labelsData.labels || []).length > 0;
       const hasPatterns = (patternsData.patterns || []).length > 0;
 
-      if (hasStartedRecording && (hasLabels || hasPatterns)) {
-        const newOutput = convertToOutput(
-          status,
-          labelsData.labels || [],
-          patternsData.patterns || []
-        );
-        setOutput(newOutput);
-        setIsAnalyzing(false);
-      } else if (!hasStartedRecording) {
+      if (hasStartedRecording) {
+        if (hasLabels || hasPatterns) {
+          const newOutput = convertToOutput(
+            status,
+            labelsData.labels || [],
+            patternsData.patterns || []
+          );
+          setOutput(newOutput);
+          setIsAnalyzing(false);
+        } else if (!status.is_recording && status.has_session) {
+          const emptyOutput = convertToOutput(status, [], []);
+          setOutput(emptyOutput);
+          setIsAnalyzing(false);
+        }
+      } else {
         setOutput(null);
       }
 
