@@ -141,7 +141,7 @@ export function workflowToPattern(workflow: Workflow | null): {
     return {
       id: step.id,
       type: nodeType,
-      data: { label },
+      data: { label, app: step.app },
       position: { x: 0, y: index * 100 },
     };
   });

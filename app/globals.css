@@ -23,6 +23,14 @@
   --color-input: hsl(222 15% 90%);
   --color-ring: hsl(222 25% 25%);
 
+  /* Workflow Pattern Graph Colors */
+  --color-workflow-bg: hsl(48 29% 91%);
+  --color-workflow-node: hsl(222 25% 25%);
+  --color-workflow-node-light: hsl(48 29% 85%);
+  --color-workflow-edge: hsl(207 15% 73%);
+  --color-workflow-edge-active: hsl(222 25% 25%);
+  --color-workflow-label: hsl(222 25% 25%);
+
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
@@ -46,6 +54,22 @@
 
 @layer components {
   /* 재사용 가능한 컴포넌트 스타일 */
+  .workflow-pattern-diagram .react-flow__node-default,
+  .workflow-pattern-diagram .react-flow__node-input,
+  .workflow-pattern-diagram .react-flow__node-output {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+  }
+
+  .workflow-pattern-diagram .react-flow__edge-path,
+  .workflow-pattern-diagram .react-flow__connection-path {
+    stroke: var(--color-workflow-edge-active);
+    stroke-width: 2;
+    stroke-linecap: round;
+    fill: none;
+  }
 }
 
 @layer utilities {

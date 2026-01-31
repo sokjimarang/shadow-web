@@ -15,7 +15,7 @@ export function OutputDashboardLayout({ output }: OutputDashboardLayoutProps) {
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* 좌측: Pattern Diagram */}
+      {/* 좌측: Pattern Diagram + Output Result */}
       <div className="space-y-6">
         <Card>
           <CardHeader>
@@ -38,19 +38,6 @@ export function OutputDashboardLayout({ output }: OutputDashboardLayoutProps) {
           </CardHeader>
           <CardContent>
             <OutputPatternDiagram nodes={pattern.nodes} edges={pattern.edges} />
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* 우측: Markdown + Output Result */}
-      <div className="space-y-6">
-        {/* Markdown 문서 */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Documentation</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <MarkdownRenderer content={markdown} />
           </CardContent>
         </Card>
 
@@ -77,6 +64,19 @@ export function OutputDashboardLayout({ output }: OutputDashboardLayoutProps) {
             ) : (
               <div className="whitespace-pre-wrap text-sm">{result.content}</div>
             )}
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* 우측: Markdown */}
+      <div className="space-y-6">
+        {/* Markdown 문서 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Documentation</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <MarkdownRenderer content={markdown} />
           </CardContent>
         </Card>
       </div>

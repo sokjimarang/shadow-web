@@ -5,6 +5,7 @@ export interface PatternNode extends Node {
   type?: 'input' | 'output' | 'default';
   data: {
     label: string;
+    app?: string;
   };
   position: {
     x: number;
@@ -19,6 +20,14 @@ export interface PatternEdge extends Edge {
   animated?: boolean;
 }
 
+export type DocumentationContent =
+  | string
+  | {
+      fullMarkdown?: string;
+      markdown?: string;
+      [key: string]: unknown;
+    };
+
 export interface Output {
   id: string;
   title: string;
@@ -27,7 +36,7 @@ export interface Output {
     nodes: PatternNode[];
     edges: PatternEdge[];
   };
-  markdown: string;
+  markdown: DocumentationContent;
   result: {
     type: 'text' | 'html' | 'json';
     content: string;
