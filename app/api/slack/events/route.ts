@@ -27,6 +27,14 @@ interface SlackEventPayload {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.text()
+    const payload: SlackEventPayload = JSON.parse(body)
+
+    // URL verification (Slack 앱 초기 설정) - 서명 검증 전에 처리
+    if (payload.type === 'url_verification' && payload.challenge) {
+      return NextResponse.json({ challenge: payload.challenge })
+    }
+
+    // 이후 모든 요청은 서명 검증 필수
     const signature = request.headers.get('x-slack-signature')
     const timestamp = request.headers.get('x-slack-request-timestamp')
 
@@ -44,13 +52,6 @@ export async function POST(request: NextRequest) {
 
     if (!isValid) {
       return NextResponse.json({ error: 'Invalid signature' }, { status: 401 })
-    }
-
-    const payload: SlackEventPayload = JSON.parse(body)
-
-    // URL verification (Slack 앱 초기 설정)
-    if (payload.type === 'url_verification' && payload.challenge) {
-      return NextResponse.json({ challenge: payload.challenge })
     }
 
     // Event callback 처리
