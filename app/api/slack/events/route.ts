@@ -63,16 +63,15 @@ export async function POST(request: NextRequest) {
       // message 이벤트 처리
       if (event.type === 'message' && event.user && event.text) {
         // Supabase에 메시지 저장
-        const { data, error } = await supabase.from('slack_messages').insert({
+        const { data, error } = await supabase.from('slack_events').insert({
+          event_type: event.type,
           user_id: event.user,
           channel_id: event.channel || 'unknown',
-          text: event.text,
-          timestamp: event.ts || new Date().toISOString(),
-          raw_event: event,
+          payload: event,
         })
 
         if (error) {
-          console.error('Failed to save message to Supabase:', error)
+          console.error('Failed to save event to Supabase:', error)
           return NextResponse.json({ error: 'Database error' }, { status: 500 })
         }
 
