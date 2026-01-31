@@ -15,7 +15,11 @@
     "db:migration:list": "supabase migration list",
     "db:push": "supabase db push",
     "db:pull": "supabase db pull",
-    "db:diff": "supabase db diff"
+    "db:diff": "supabase db diff",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
     "@slack/web-api": "^7.13.0",
@@ -27,6 +31,7 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.1",
     "@tailwindcss/postcss": "^4.0.1",
     "@types/node": "^22",
     "@types/react": "^19",
