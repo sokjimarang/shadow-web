@@ -4,8 +4,10 @@ import type {
   SendMessageOptions,
   SlackBlock,
   InteractiveQuestionPayload,
+  SendAgentSpecOptions,
 } from '@/types/slack'
-import { buildInteractiveQuestionBlocks } from './block-builder'
+import { buildInteractiveQuestionBlocks, buildCodeSection } from './block-builder'
+import { slackFileUploader } from './upload'
 
 export class SlackClient {
   private client: WebClient
@@ -51,6 +53,57 @@ export class SlackClient {
       text: fallbackText,
       blocks,
     })
+  }
+
+  async sendAgentSpec(options: SendAgentSpecOptions): Promise<void> {
+    if (options.format === 'file') {
+      const filename = options.filename || 'agent_spec.md'
+      await slackFileUploader.uploadMarkdown(
+        options.channel,
+        options.spec,
+        filename,
+        'Agent Specification'
+      )
+    } else {
+      const MAX_BLOCK_LENGTH = 3000
+      const chunks = this.chunkText(options.spec, MAX_BLOCK_LENGTH)
+
+      const blocks: SlackBlock[] = chunks.map((chunk) =>
+        buildCodeSection(chunk, 'markdown')
+      )
+
+      await this.sendMessage({
+        channel: options.channel,
+        text: 'Agent Specification',
+        blocks,
+      })
+    }
+  }
+
+  private chunkText(text: string, maxLength: number): string[] {
+    if (text.length <= maxLength) {
+      return [text]
+    }
+
+    const chunks: string[] = []
+    let currentChunk = ''
+
+    const lines = text.split('\n')
+
+    for (const line of lines) {
+      if (currentChunk.length + line.length + 1 > maxLength) {
+        chunks.push(currentChunk)
+        currentChunk = line
+      } else {
+        currentChunk += (currentChunk ? '\n' : '') + line
+      }
+    }
+
+    if (currentChunk) {
+      chunks.push(currentChunk)
+    }
+
+    return chunks
   }
 
   private handleError(method: string, error: unknown): never {
