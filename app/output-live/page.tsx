@@ -15,6 +15,7 @@ export default function OutputLivePage() {
     output,
     error,
     recordingStatus,
+    hasStartedRecording,
     startRecording,
     stopRecording,
   } = useShadowLive();
@@ -120,7 +121,7 @@ export default function OutputLivePage() {
                     녹화 중지
                   </Button>
                 </div>
-                {recordingStatus && (
+                {hasStartedRecording && recordingStatus && (
                   <div className="text-sm space-y-1 pt-2 border-t">
                     <p>
                       <span className="font-medium">프레임:</span>{' '}

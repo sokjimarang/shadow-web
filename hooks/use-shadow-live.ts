@@ -15,6 +15,7 @@ interface UseShadowLiveReturn {
   output: Output | null;
   error: string | null;
   recordingStatus: RecordingStatus | null;
+  hasStartedRecording: boolean;
   startRecording: (duration: number) => Promise<void>;
   stopRecording: () => Promise<void>;
 }
@@ -25,6 +26,7 @@ export function useShadowLive(): UseShadowLiveReturn {
   const [output, setOutput] = useState<Output | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [recordingStatus, setRecordingStatus] = useState<RecordingStatus | null>(null);
+  const [hasStartedRecording, setHasStartedRecording] = useState(false);
   const prevIsRecordingRef = useRef(false);
 
   const fetchData = useCallback(async () => {
@@ -55,7 +57,7 @@ export function useShadowLive(): UseShadowLiveReturn {
       const hasLabels = (labelsData.labels || []).length > 0;
       const hasPatterns = (patternsData.patterns || []).length > 0;
 
-      if (hasLabels || hasPatterns) {
+      if (hasStartedRecording && (hasLabels || hasPatterns)) {
         const newOutput = convertToOutput(
           status,
           labelsData.labels || [],
@@ -63,7 +65,7 @@ export function useShadowLive(): UseShadowLiveReturn {
         );
         setOutput(newOutput);
         setIsAnalyzing(false);
-      } else {
+      } else if (!hasStartedRecording) {
         setOutput(null);
       }
 
@@ -71,7 +73,7 @@ export function useShadowLive(): UseShadowLiveReturn {
     } catch (err) {
       setError(err instanceof Error ? err.message : '데이터 조회 실패');
     }
-  }, []);
+  }, [hasStartedRecording]);
 
   useEffect(() => {
     fetchData();
@@ -83,6 +85,7 @@ export function useShadowLive(): UseShadowLiveReturn {
 
   const startRecording = useCallback(async (duration: number) => {
     try {
+      setHasStartedRecording(true);
       const res = await fetch('/api/shadow/recording/start', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -159,6 +162,7 @@ export function useShadowLive(): UseShadowLiveReturn {
     output,
     error,
     recordingStatus,
+    hasStartedRecording,
     startRecording,
     stopRecording,
   };
