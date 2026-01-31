@@ -39,3 +39,7 @@ next-env.d.ts
 # supabase
 **/supabase/.temp
 **/supabase/.branches
+
+# development tools
+.ralph/
+.serena/
