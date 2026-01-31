@@ -1,12 +1,12 @@
 'use client';
 
-import { useMemo, useRef, useEffect } from 'react';
+import { useMemo, useRef, useEffect, useCallback } from 'react';
 import CytoscapeComponent from 'react-cytoscapejs';
 import cytoscape from 'cytoscape';
 import dagre from 'cytoscape-dagre';
+import { ZoomIn, ZoomOut, Maximize2, RefreshCw } from 'lucide-react';
 import type { PatternNode, PatternEdge } from '@/types';
 
-// dagre 레이아웃 등록
 if (typeof cytoscape !== 'undefined') {
   cytoscape.use(dagre);
 }
@@ -24,8 +24,8 @@ export function WorkflowDiagram({
   className = '',
 }: WorkflowDiagramProps) {
   const cyRef = useRef<cytoscape.Core | null>(null);
+  const isInitializedRef = useRef(false);
 
-  // Cytoscape 형식으로 데이터 변환
   const elements = useMemo(() => {
     const cytoscapeNodes = nodes.map((node) => ({
       data: {
@@ -47,10 +47,8 @@ export function WorkflowDiagram({
     return [...cytoscapeNodes, ...cytoscapeEdges];
   }, [nodes, edges]);
 
-  // Cytoscape 스타일 정의
   const stylesheet = useMemo(
     () => [
-      // 기본 노드 스타일
       {
         selector: 'node',
         style: {
@@ -70,7 +68,6 @@ export function WorkflowDiagram({
           shape: 'roundrectangle',
         },
       },
-      // Input 노드 스타일
       {
         selector: 'node.input',
         style: {
@@ -81,7 +78,6 @@ export function WorkflowDiagram({
           'font-weight': '600',
         },
       },
-      // Output 노드 스타일
       {
         selector: 'node.output',
         style: {
@@ -93,7 +89,6 @@ export function WorkflowDiagram({
           'font-weight': '600',
         },
       },
-      // Edge 스타일
       {
         selector: 'edge',
         style: {
@@ -114,38 +109,92 @@ export function WorkflowDiagram({
     []
   );
 
-  // 레이아웃 설정
   const layout = useMemo(
     () => ({
       name: 'dagre',
-      rankDir: 'TB', // Top to Bottom
+      rankDir: 'TB',
       nodeSep: 50,
       rankSep: 100,
       padding: 30,
+      fit: false,
+      animate: false,
     }),
     []
   );
 
-  // Cytoscape 인스턴스 초기화 및 레이아웃 적용
-  useEffect(() => {
+  const runLayout = useCallback(() => {
     if (cyRef.current) {
       const cy = cyRef.current;
-      cy.layout(layout).run();
+      const layoutInstance = cy.layout(layout);
 
-      // 줌 레벨 조정
+      layoutInstance.run();
+
+      layoutInstance.on('layoutstop', () => {
+        if (!isInitializedRef.current) {
+          cy.fit(undefined, 50);
+          cy.center();
+          isInitializedRef.current = true;
+        }
+      });
+    }
+  }, [layout]);
+
+  useEffect(() => {
+    if (cyRef.current && elements.length > 0) {
+      runLayout();
+    }
+  }, [elements, runLayout]);
+
+  const handleZoomIn = () => {
+    if (cyRef.current) {
+      const cy = cyRef.current;
+      const currentZoom = cy.zoom();
+      const newZoom = Math.min(currentZoom * 1.2, 1.5);
+      cy.zoom({
+        level: newZoom,
+        renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 },
+      });
+    }
+  };
+
+  const handleZoomOut = () => {
+    if (cyRef.current) {
+      const cy = cyRef.current;
+      const currentZoom = cy.zoom();
+      const newZoom = Math.max(currentZoom / 1.2, 0.3);
+      cy.zoom({
+        level: newZoom,
+        renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 },
+      });
+    }
+  };
+
+  const handleFitView = () => {
+    if (cyRef.current) {
+      const cy = cyRef.current;
       cy.fit(undefined, 50);
       cy.center();
     }
-  }, [elements, layout]);
+  };
+
+  const handleReset = () => {
+    if (cyRef.current) {
+      const cy = cyRef.current;
+      runLayout();
+      setTimeout(() => {
+        cy.fit(undefined, 50);
+        cy.center();
+      }, 100);
+    }
+  };
 
   return (
     <div
-      className={`workflow-diagram h-[700px] w-full border-2 border-workflow-edge rounded-lg bg-white overflow-hidden ${className}`}
+      className={`workflow-diagram h-[700px] w-full border-2 border-workflow-edge rounded-lg bg-white overflow-hidden relative ${className}`}
     >
       <CytoscapeComponent
         elements={elements}
         stylesheet={stylesheet}
-        layout={layout}
         cy={(cy) => {
           cyRef.current = cy;
         }}
@@ -154,6 +203,41 @@ export function WorkflowDiagram({
         minZoom={0.3}
         maxZoom={1.5}
       />
+
+      <div className="absolute bottom-4 right-4 flex flex-col gap-2 bg-white border-2 border-workflow-edge rounded-lg p-1 shadow-sm">
+        <button
+          onClick={handleZoomIn}
+          className="p-2 hover:bg-muted rounded transition-colors"
+          title="Zoom In"
+          aria-label="Zoom In"
+        >
+          <ZoomIn className="w-4 h-4 text-primary" />
+        </button>
+        <button
+          onClick={handleZoomOut}
+          className="p-2 hover:bg-muted rounded transition-colors"
+          title="Zoom Out"
+          aria-label="Zoom Out"
+        >
+          <ZoomOut className="w-4 h-4 text-primary" />
+        </button>
+        <button
+          onClick={handleFitView}
+          className="p-2 hover:bg-muted rounded transition-colors"
+          title="Fit to View"
+          aria-label="Fit to View"
+        >
+          <Maximize2 className="w-4 h-4 text-primary" />
+        </button>
+        <button
+          onClick={handleReset}
+          className="p-2 hover:bg-muted rounded transition-colors"
+          title="Reset View"
+          aria-label="Reset View"
+        >
+          <RefreshCw className="w-4 h-4 text-primary" />
+        </button>
+      </div>
     </div>
   );
 }

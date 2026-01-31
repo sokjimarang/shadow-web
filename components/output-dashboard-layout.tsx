@@ -20,7 +20,7 @@ export function OutputDashboardLayout({ output }: OutputDashboardLayoutProps) {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>Workflow Pattern</CardTitle>
+              <CardTitle>Behaviour Pattern</CardTitle>
               {metadata?.status && (
                 <Badge
                   variant={
