@@ -112,7 +112,12 @@ function resolveIconKey(label: string, app?: string, type?: string) {
   return 'process';
 }
 
-const CustomNode = memo(({ data, type }: NodeProps) => {
+interface CustomNodeData {
+  label: string;
+  app?: string;
+}
+
+const CustomNode = memo(({ data, type }: NodeProps<CustomNodeData>) => {
   const iconKey = resolveIconKey(data.label ?? '', data.app, type);
 
   return (

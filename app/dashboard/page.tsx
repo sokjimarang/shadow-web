@@ -42,6 +42,40 @@ import { WorkflowDiagram } from '@/components/workflow-diagram';
 export default function DashboardPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
+  // WorkflowDiagram 더미 데이터
+  const dummyNodes = [
+    {
+      id: '1',
+      type: 'input' as const,
+      data: { label: '시작' },
+      position: { x: 0, y: 0 },
+    },
+    {
+      id: '2',
+      type: 'default' as const,
+      data: { label: '처리 단계 1' },
+      position: { x: 0, y: 100 },
+    },
+    {
+      id: '3',
+      type: 'default' as const,
+      data: { label: '처리 단계 2' },
+      position: { x: 0, y: 200 },
+    },
+    {
+      id: '4',
+      type: 'output' as const,
+      data: { label: '완료' },
+      position: { x: 0, y: 300 },
+    },
+  ];
+
+  const dummyEdges = [
+    { id: 'e1-2', source: '1', target: '2' },
+    { id: 'e2-3', source: '2', target: '3' },
+    { id: 'e3-4', source: '3', target: '4' },
+  ];
+
   return (
     <div className="min-h-screen p-8">
       <div className="max-w-7xl mx-auto space-y-8">
@@ -209,7 +243,7 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <WorkflowDiagram />
+            <WorkflowDiagram nodes={dummyNodes} edges={dummyEdges} />
           </CardContent>
         </Card>
 
