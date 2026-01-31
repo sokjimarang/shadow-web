@@ -6,16 +6,15 @@ import { WorkflowDiagram } from './workflow-diagram';
 import { MarkdownRenderer } from './markdown-renderer';
 import type { Output } from '@/types';
 
-interface OutputDashboardLayoutProps {
+interface OutputDashboardLayoutLiveProps {
   output: Output;
 }
 
-export function OutputDashboardLayout({ output }: OutputDashboardLayoutProps) {
+export function OutputDashboardLayoutLive({ output }: OutputDashboardLayoutLiveProps) {
   const { pattern, markdown, result, metadata } = output;
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* 좌측: Pattern Diagram + Output Result */}
       <div className="space-y-6">
         <Card>
           <CardHeader>
@@ -37,11 +36,10 @@ export function OutputDashboardLayout({ output }: OutputDashboardLayoutProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <WorkflowDiagram nodes={pattern.nodes} edges={pattern.edges} />
+            <WorkflowDiagram nodes={pattern.nodes} edges={pattern.edges} isLive={true} />
           </CardContent>
         </Card>
 
-        {/* Output Result */}
         <Card>
           <CardHeader>
             <CardTitle>Output Result</CardTitle>
@@ -54,7 +52,13 @@ export function OutputDashboardLayout({ output }: OutputDashboardLayoutProps) {
             {result.type === 'json' ? (
               <pre className="p-4 bg-muted rounded-lg overflow-x-auto">
                 <code className="text-sm">
-                  {JSON.stringify(JSON.parse(result.content), null, 2)}
+                  {(() => {
+                    try {
+                      return JSON.stringify(JSON.parse(result.content), null, 2);
+                    } catch {
+                      return result.content;
+                    }
+                  })()}
                 </code>
               </pre>
             ) : result.type === 'html' ? (
@@ -69,9 +73,7 @@ export function OutputDashboardLayout({ output }: OutputDashboardLayoutProps) {
         </Card>
       </div>
 
-      {/* 우측: Markdown */}
       <div className="space-y-6">
-        {/* Markdown 문서 */}
         <Card>
           <CardHeader>
             <CardTitle>Documentation</CardTitle>

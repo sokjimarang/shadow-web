@@ -10,19 +10,16 @@ import {
   useEdgesState,
   BackgroundVariant,
   type NodeProps,
-  type Edge,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import type { PatternNode, PatternEdge } from '@/types';
 
-interface WorkflowDiagramProps {
+interface OutputPatternDiagramLiveProps {
   nodes: PatternNode[];
   edges: PatternEdge[];
   className?: string;
-  isLive?: boolean;
 }
 
-// 아이콘 베이스 스타일
 const iconBaseStyle = {
   display: 'inline-flex',
   alignItems: 'center',
@@ -37,7 +34,6 @@ const iconBaseStyle = {
 
 const iconStroke = 'var(--color-workflow-node)';
 
-// 워크플로우 아이콘 컴포넌트
 function WorkflowIcon({ name }: { name: string }) {
   if (name === 'chat') {
     return (
@@ -93,7 +89,6 @@ function WorkflowIcon({ name }: { name: string }) {
     );
   }
 
-  // Default 아이콘
   return (
     <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={iconStroke} strokeWidth="2">
       <rect x="4" y="4" width="7" height="7" rx="1" />
@@ -103,7 +98,6 @@ function WorkflowIcon({ name }: { name: string }) {
   );
 }
 
-// 아이콘 키 결정 함수
 function resolveIconKey(label: string, app?: string, type?: string) {
   const token = `${app ?? ''} ${label}`.toLowerCase();
 
@@ -118,9 +112,8 @@ function resolveIconKey(label: string, app?: string, type?: string) {
   return 'process';
 }
 
-// 기본 노드 컴포넌트
 const CustomNode = memo(({ data, type }: NodeProps) => {
-  const iconKey = resolveIconKey(data.label as string ?? '', data.app as string | undefined, type);
+  const iconKey = resolveIconKey(data.label ?? '', data.app, type);
 
   return (
     <div
@@ -143,16 +136,15 @@ const CustomNode = memo(({ data, type }: NodeProps) => {
       <span style={iconBaseStyle}>
         <WorkflowIcon name={iconKey} />
       </span>
-      <span style={{ textAlign: 'left', flex: 1 }}>{data.label as string}</span>
+      <span style={{ textAlign: 'left', flex: 1 }}>{data.label}</span>
     </div>
   );
 });
 
 CustomNode.displayName = 'CustomNode';
 
-// 입력 노드 컴포넌트
 const InputNode = memo(({ data, type }: NodeProps) => {
-  const iconKey = resolveIconKey(data.label as string ?? '', data.app as string | undefined, type);
+  const iconKey = resolveIconKey(data.label ?? '', data.app, type);
 
   return (
     <div
@@ -181,16 +173,15 @@ const InputNode = memo(({ data, type }: NodeProps) => {
       >
         <WorkflowIcon name={iconKey} />
       </span>
-      <span style={{ textAlign: 'left', flex: 1 }}>{data.label as string}</span>
+      <span style={{ textAlign: 'left', flex: 1 }}>{data.label}</span>
     </div>
   );
 });
 
 InputNode.displayName = 'InputNode';
 
-// 출력 노드 컴포넌트
 const OutputNode = memo(({ data, type }: NodeProps) => {
-  const iconKey = resolveIconKey(data.label as string ?? '', data.app as string | undefined, type);
+  const iconKey = resolveIconKey(data.label ?? '', data.app, type);
 
   return (
     <div
@@ -213,43 +204,33 @@ const OutputNode = memo(({ data, type }: NodeProps) => {
       <span style={iconBaseStyle}>
         <WorkflowIcon name={iconKey} />
       </span>
-      <span style={{ textAlign: 'left', flex: 1 }}>{data.label as string}</span>
+      <span style={{ textAlign: 'left', flex: 1 }}>{data.label}</span>
     </div>
   );
 });
 
 OutputNode.displayName = 'OutputNode';
 
-// 노드 타입 매핑
 const nodeTypes = {
   input: InputNode,
   output: OutputNode,
   default: CustomNode,
 };
 
-export function WorkflowDiagram({
+export function OutputPatternDiagramLive({
   nodes,
   edges,
   className = '',
-  isLive = false,
-}: WorkflowDiagramProps) {
-  // Edge 정규화 - 명확한 스타일 설정으로 edge가 확실히 표시되도록 함
-  const normalizedEdges = useMemo<Edge[]>(
+}: OutputPatternDiagramLiveProps) {
+  const normalizedEdges = useMemo(
     () =>
       edges.map((edge) => ({
-        id: edge.id,
-        source: edge.source,
-        target: edge.target,
-        type: 'smoothstep',
-        animated: edge.animated ?? false,
-        label: edge.label,
+        ...edge,
+        animated: false,
         style: {
-          stroke: '#30364F',
+          stroke: 'var(--color-workflow-edge-active)',
           strokeWidth: 2,
-        },
-        markerEnd: {
-          type: 'arrowclosed' as const,
-          color: '#30364F',
+          ...edge.style,
         },
       })),
     [edges]
@@ -258,22 +239,18 @@ export function WorkflowDiagram({
   const [nodesState, setNodes, onNodesChange] = useNodesState(nodes);
   const [edgesState, setEdges, onEdgesChange] = useEdgesState(normalizedEdges);
 
-  // 실시간 업데이트 (isLive일 때만)
+  // 실시간 업데이트: props 변경 감지하여 상태 업데이트
   useEffect(() => {
-    if (isLive) {
-      setNodes(nodes);
-    }
-  }, [nodes, setNodes, isLive]);
+    setNodes(nodes);
+  }, [nodes, setNodes]);
 
   useEffect(() => {
-    if (isLive) {
-      setEdges(normalizedEdges);
-    }
-  }, [normalizedEdges, setEdges, isLive]);
+    setEdges(normalizedEdges);
+  }, [normalizedEdges, setEdges]);
 
   return (
     <div
-      className={`workflow-diagram h-[700px] w-full border-2 border-workflow-edge rounded-lg bg-white ${className}`}
+      className={`workflow-pattern-diagram h-[700px] w-full border-2 border-workflow-edge rounded-lg bg-white ${className}`}
     >
       <ReactFlow
         nodes={nodesState}
@@ -284,24 +261,20 @@ export function WorkflowDiagram({
         fitView
         fitViewOptions={{
           padding: 0.2,
-          maxZoom: 1,
+        }}
+        defaultEdgeOptions={{
+          type: 'smoothstep',
+          animated: false,
+          style: {
+            stroke: 'var(--color-workflow-edge-active)',
+            strokeWidth: 2,
+          },
         }}
         nodesDraggable={true}
         nodesConnectable={false}
         elementsSelectable={true}
-        minZoom={0.3}
+        minZoom={0.5}
         maxZoom={1.5}
-        defaultEdgeOptions={{
-          type: 'smoothstep',
-          style: {
-            stroke: '#30364F',
-            strokeWidth: 2,
-          },
-          markerEnd: {
-            type: 'arrowclosed',
-            color: '#30364F',
-          },
-        }}
       >
         <Controls
           style={{

@@ -5,7 +5,10 @@
       "Bash(git checkout:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Read(//Users/doyoonlee/Documents/screenshot/**)",
+      "mcp__serena__list_dir",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
