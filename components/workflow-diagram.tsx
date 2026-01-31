@@ -1,19 +1,15 @@
 'use client';
 
-import { memo, useMemo, useEffect } from 'react';
-import {
-  ReactFlow,
-  MiniMap,
-  Controls,
-  Background,
-  useNodesState,
-  useEdgesState,
-  BackgroundVariant,
-  type NodeProps,
-  type Edge,
-} from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
+import { useMemo, useRef, useEffect } from 'react';
+import CytoscapeComponent from 'react-cytoscapejs';
+import cytoscape from 'cytoscape';
+import dagre from 'cytoscape-dagre';
 import type { PatternNode, PatternEdge } from '@/types';
+
+// dagre 레이아웃 등록
+if (typeof cytoscape !== 'undefined') {
+  cytoscape.use(dagre);
+}
 
 interface WorkflowDiagramProps {
   nodes: PatternNode[];
@@ -22,313 +18,142 @@ interface WorkflowDiagramProps {
   isLive?: boolean;
 }
 
-// 아이콘 베이스 스타일
-const iconBaseStyle = {
-  display: 'inline-flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '22px',
-  height: '22px',
-  borderRadius: '6px',
-  border: '1px solid var(--color-workflow-edge)',
-  background: 'var(--color-workflow-node-light)',
-  flexShrink: 0,
-} as const;
-
-const iconStroke = 'var(--color-workflow-node)';
-
-// 워크플로우 아이콘 컴포넌트
-function WorkflowIcon({ name }: { name: string }) {
-  if (name === 'chat') {
-    return (
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={iconStroke} strokeWidth="2">
-        <path d="M7 9h10M7 13h6" />
-        <path d="M4 5h16a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H9l-5 4V7a2 2 0 0 1 2-2z" />
-      </svg>
-    );
-  }
-
-  if (name === 'doc') {
-    return (
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={iconStroke} strokeWidth="2">
-        <path d="M7 4h7l4 4v12a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z" />
-        <path d="M14 4v4h4" />
-        <path d="M8 13h8M8 17h6" />
-      </svg>
-    );
-  }
-
-  if (name === 'db') {
-    return (
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={iconStroke} strokeWidth="2">
-        <ellipse cx="12" cy="5" rx="7" ry="3" />
-        <path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5" />
-        <path d="M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" />
-      </svg>
-    );
-  }
-
-  if (name === 'decision') {
-    return (
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={iconStroke} strokeWidth="2">
-        <path d="M12 3l7 9-7 9-7-9 7-9z" />
-        <path d="M12 8v8" />
-      </svg>
-    );
-  }
-
-  if (name === 'check') {
-    return (
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={iconStroke} strokeWidth="2">
-        <path d="M5 12l4 4 10-10" />
-      </svg>
-    );
-  }
-
-  if (name === 'bolt') {
-    return (
-      <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={iconStroke} strokeWidth="2">
-        <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z" />
-      </svg>
-    );
-  }
-
-  // Default 아이콘
-  return (
-    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke={iconStroke} strokeWidth="2">
-      <rect x="4" y="4" width="7" height="7" rx="1" />
-      <rect x="13" y="13" width="7" height="7" rx="1" />
-      <path d="M11 8h2M8 11v2" />
-    </svg>
-  );
-}
-
-// 아이콘 키 결정 함수
-function resolveIconKey(label: string, app?: string, type?: string) {
-  const token = `${app ?? ''} ${label}`.toLowerCase();
-
-  if (type === 'input') return 'bolt';
-  if (type === 'output') return 'check';
-  if (token.includes('slack') || token.includes('dm') || token.includes('message')) return 'chat';
-  if (token.includes('jira') || token.includes('issue')) return 'decision';
-  if (token.includes('notion') || token.includes('confluence') || token.includes('doc')) return 'doc';
-  if (token.includes('drive') || token.includes('storage') || token.includes('db')) return 'db';
-  if (token.includes('검토') || token.includes('분기') || token.includes('조건')) return 'decision';
-
-  return 'process';
-}
-
-// 기본 노드 컴포넌트
-const CustomNode = memo(({ data, type }: NodeProps) => {
-  const iconKey = resolveIconKey(data.label as string ?? '', data.app as string | undefined, type);
-
-  return (
-    <div
-      style={{
-        padding: '12px 18px',
-        borderRadius: '8px',
-        border: '2px solid var(--color-workflow-edge)',
-        background: 'white',
-        minWidth: '180px',
-        fontSize: '13px',
-        fontWeight: '500',
-        color: 'var(--color-workflow-node)',
-        whiteSpace: 'pre-line',
-        lineHeight: '1.4',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-      }}
-    >
-      <span style={iconBaseStyle}>
-        <WorkflowIcon name={iconKey} />
-      </span>
-      <span style={{ textAlign: 'left', flex: 1 }}>{data.label as string}</span>
-    </div>
-  );
-});
-
-CustomNode.displayName = 'CustomNode';
-
-// 입력 노드 컴포넌트
-const InputNode = memo(({ data, type }: NodeProps) => {
-  const iconKey = resolveIconKey(data.label as string ?? '', data.app as string | undefined, type);
-
-  return (
-    <div
-      style={{
-        padding: '14px 20px',
-        borderRadius: '8px',
-        border: '2px solid var(--color-workflow-node)',
-        background: 'var(--color-workflow-node)',
-        color: 'white',
-        minWidth: '180px',
-        fontSize: '14px',
-        fontWeight: '600',
-        whiteSpace: 'pre-line',
-        lineHeight: '1.4',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-      }}
-    >
-      <span
-        style={{
-          ...iconBaseStyle,
-          border: '1px solid rgba(255, 255, 255, 0.4)',
-          background: 'rgba(255, 255, 255, 0.16)',
-        }}
-      >
-        <WorkflowIcon name={iconKey} />
-      </span>
-      <span style={{ textAlign: 'left', flex: 1 }}>{data.label as string}</span>
-    </div>
-  );
-});
-
-InputNode.displayName = 'InputNode';
-
-// 출력 노드 컴포넌트
-const OutputNode = memo(({ data, type }: NodeProps) => {
-  const iconKey = resolveIconKey(data.label as string ?? '', data.app as string | undefined, type);
-
-  return (
-    <div
-      style={{
-        padding: '14px 20px',
-        borderRadius: '8px',
-        border: '2px solid var(--color-workflow-edge-active)',
-        background: 'var(--color-workflow-node-light)',
-        color: 'var(--color-workflow-node)',
-        minWidth: '180px',
-        fontSize: '14px',
-        fontWeight: '600',
-        whiteSpace: 'pre-line',
-        lineHeight: '1.4',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-      }}
-    >
-      <span style={iconBaseStyle}>
-        <WorkflowIcon name={iconKey} />
-      </span>
-      <span style={{ textAlign: 'left', flex: 1 }}>{data.label as string}</span>
-    </div>
-  );
-});
-
-OutputNode.displayName = 'OutputNode';
-
-// 노드 타입 매핑
-const nodeTypes = {
-  input: InputNode,
-  output: OutputNode,
-  default: CustomNode,
-};
-
 export function WorkflowDiagram({
   nodes,
   edges,
   className = '',
-  isLive = false,
 }: WorkflowDiagramProps) {
-  // Edge 정규화 - 명확한 스타일 설정으로 edge가 확실히 표시되도록 함
-  const normalizedEdges = useMemo<Edge[]>(
-    () =>
-      edges.map((edge) => ({
+  const cyRef = useRef<cytoscape.Core | null>(null);
+
+  // Cytoscape 형식으로 데이터 변환
+  const elements = useMemo(() => {
+    const cytoscapeNodes = nodes.map((node) => ({
+      data: {
+        id: node.id,
+        label: node.data.label,
+      },
+      classes: node.type || 'default',
+    }));
+
+    const cytoscapeEdges = edges.map((edge) => ({
+      data: {
         id: edge.id,
         source: edge.source,
         target: edge.target,
-        type: 'smoothstep',
-        animated: edge.animated ?? false,
-        label: edge.label,
+        label: edge.label || '',
+      },
+    }));
+
+    return [...cytoscapeNodes, ...cytoscapeEdges];
+  }, [nodes, edges]);
+
+  // Cytoscape 스타일 정의
+  const stylesheet: cytoscape.Stylesheet[] = useMemo(
+    () => [
+      // 기본 노드 스타일
+      {
+        selector: 'node',
         style: {
-          stroke: '#30364F',
-          strokeWidth: 2,
-        },
-        markerEnd: {
-          type: 'arrowclosed' as const,
+          'background-color': '#FFFFFF',
+          'border-width': 2,
+          'border-color': '#ACBAC4',
+          label: 'data(label)',
+          'text-valign': 'center',
+          'text-halign': 'center',
+          'font-size': '13px',
+          'font-weight': '500',
           color: '#30364F',
+          'text-wrap': 'wrap',
+          'text-max-width': '160px',
+          width: 180,
+          height: 60,
+          shape: 'roundrectangle',
         },
-      })),
-    [edges]
+      },
+      // Input 노드 스타일
+      {
+        selector: 'node.input',
+        style: {
+          'background-color': '#30364F',
+          'border-color': '#30364F',
+          color: '#FFFFFF',
+          'font-size': '14px',
+          'font-weight': '600',
+        },
+      },
+      // Output 노드 스타일
+      {
+        selector: 'node.output',
+        style: {
+          'background-color': '#E1D9BC',
+          'border-color': '#30364F',
+          'border-width': 2,
+          color: '#30364F',
+          'font-size': '14px',
+          'font-weight': '600',
+        },
+      },
+      // Edge 스타일
+      {
+        selector: 'edge',
+        style: {
+          width: 2,
+          'line-color': '#30364F',
+          'target-arrow-color': '#30364F',
+          'target-arrow-shape': 'triangle',
+          'curve-style': 'bezier',
+          label: 'data(label)',
+          'font-size': '11px',
+          color: '#30364F',
+          'text-background-color': '#FFFFFF',
+          'text-background-opacity': 0.8,
+          'text-background-padding': '3px',
+        },
+      },
+    ],
+    []
   );
 
-  const [nodesState, setNodes, onNodesChange] = useNodesState(nodes);
-  const [edgesState, setEdges, onEdgesChange] = useEdgesState(normalizedEdges);
+  // 레이아웃 설정
+  const layout = useMemo(
+    () => ({
+      name: 'dagre',
+      rankDir: 'TB', // Top to Bottom
+      nodeSep: 50,
+      rankSep: 100,
+      padding: 30,
+    }),
+    []
+  );
 
-  // 실시간 업데이트 (isLive일 때만)
+  // Cytoscape 인스턴스 초기화 및 레이아웃 적용
   useEffect(() => {
-    if (isLive) {
-      setNodes(nodes);
-    }
-  }, [nodes, setNodes, isLive]);
+    if (cyRef.current) {
+      const cy = cyRef.current;
+      cy.layout(layout).run();
 
-  useEffect(() => {
-    if (isLive) {
-      setEdges(normalizedEdges);
+      // 줌 레벨 조정
+      cy.fit(undefined, 50);
+      cy.center();
     }
-  }, [normalizedEdges, setEdges, isLive]);
+  }, [elements, layout]);
 
   return (
     <div
-      className={`workflow-diagram h-[700px] w-full border-2 border-workflow-edge rounded-lg bg-white ${className}`}
+      className={`workflow-diagram h-[700px] w-full border-2 border-workflow-edge rounded-lg bg-white overflow-hidden ${className}`}
     >
-      <ReactFlow
-        nodes={nodesState}
-        edges={edgesState}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        nodeTypes={nodeTypes}
-        fitView
-        fitViewOptions={{
-          padding: 0.2,
-          maxZoom: 1,
+      <CytoscapeComponent
+        elements={elements}
+        stylesheet={stylesheet}
+        layout={layout}
+        cy={(cy) => {
+          cyRef.current = cy;
         }}
-        nodesDraggable={true}
-        nodesConnectable={false}
-        elementsSelectable={true}
+        style={{ width: '100%', height: '100%' }}
+        wheelSensitivity={0.2}
         minZoom={0.3}
         maxZoom={1.5}
-        defaultEdgeOptions={{
-          type: 'smoothstep',
-          style: {
-            stroke: '#30364F',
-            strokeWidth: 2,
-          },
-          markerEnd: {
-            type: 'arrowclosed',
-            color: '#30364F',
-          },
-        }}
-      >
-        <Controls
-          style={{
-            background: 'white',
-            border: '1px solid var(--color-workflow-edge)',
-            borderRadius: '6px',
-          }}
-        />
-        <MiniMap
-          nodeColor="var(--color-workflow-node)"
-          maskColor="rgba(225, 217, 188, 0.6)"
-          style={{
-            background: 'white',
-            border: '1px solid var(--color-workflow-edge)',
-            borderRadius: '6px',
-          }}
-        />
-        <Background
-          variant={BackgroundVariant.Dots}
-          gap={16}
-          size={1.5}
-          color="var(--color-workflow-edge)"
-          style={{
-            opacity: 0.4,
-          }}
-        />
-      </ReactFlow>
+      />
     </div>
   );
 }
