@@ -74,4 +74,16 @@
 
 @layer utilities {
   /* 커스텀 유틸리티 클래스 */
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 1.5s infinite;
+  }
 }

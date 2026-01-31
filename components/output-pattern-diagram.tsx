@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import {
   ReactFlow,
   MiniMap,
@@ -236,8 +236,16 @@ export function OutputPatternDiagram({
     [edges]
   );
 
-  const [nodesState, , onNodesChange] = useNodesState(nodes);
-  const [edgesState, , onEdgesChange] = useEdgesState(normalizedEdges);
+  const [nodesState, setNodes, onNodesChange] = useNodesState(nodes);
+  const [edgesState, setEdges, onEdgesChange] = useEdgesState(normalizedEdges);
+
+  useEffect(() => {
+    setNodes(nodes);
+  }, [nodes, setNodes]);
+
+  useEffect(() => {
+    setEdges(normalizedEdges);
+  }, [normalizedEdges, setEdges]);
 
   return (
     <div

@@ -77,6 +77,19 @@ function stripAgentSpecSection(markdown: string): string {
 
 export function MarkdownRenderer({ content }: MarkdownRendererProps) {
   const markdown = stripAgentSpecSection(resolveMarkdown(content));
+  const blockTags = new Set([
+    'div',
+    'table',
+    'pre',
+    'ul',
+    'ol',
+    'li',
+    'blockquote',
+    'h1',
+    'h2',
+    'h3',
+    'hr',
+  ]);
 
   return (
     <div className="text-sm text-foreground">
@@ -98,9 +111,20 @@ export function MarkdownRenderer({ content }: MarkdownRendererProps) {
               {children}
             </h3>
           ),
-          p: ({ children }) => (
-            <p className="leading-6 text-foreground mb-3">{children}</p>
-          ),
+          p: ({ node, children }) => {
+            const hasBlockChild = Array.isArray(node?.children)
+              ? node.children.some(
+                  (child: { type?: string; tagName?: string }) =>
+                    child.type === 'element' && !!child.tagName && blockTags.has(child.tagName)
+                )
+              : false;
+
+            if (hasBlockChild) {
+              return <div className="leading-6 text-foreground mb-3">{children}</div>;
+            }
+
+            return <p className="leading-6 text-foreground mb-3">{children}</p>;
+          },
           ul: ({ children }) => (
             <ul className="list-disc pl-5 mb-3 space-y-1">{children}</ul>
           ),
