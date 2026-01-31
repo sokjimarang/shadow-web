@@ -11,13 +11,25 @@ export class SlackFileUploader {
 
   async uploadFile(options: UploadFileOptions): Promise<void> {
     try {
-      await this.client.files.uploadV2({
+      if (!options.file && !options.content) {
+        throw new Error('Either file or content must be provided')
+      }
+
+      const uploadParams: any = {
         channels: options.channels,
-        file: options.file,
         filename: options.filename,
         initial_comment: options.initial_comment,
         title: options.title,
-      })
+      }
+
+      if (options.file) {
+        uploadParams.file = options.file
+      }
+      if (options.content) {
+        uploadParams.content = options.content
+      }
+
+      await this.client.files.uploadV2(uploadParams)
     } catch (error) {
       this.handleError('uploadFile', error)
     }
