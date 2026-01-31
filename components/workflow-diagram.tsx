@@ -64,7 +64,7 @@ export function WorkflowDiagram() {
   );
 
   return (
-    <div className="h-[400px] w-full border border-border rounded-lg bg-background">
+    <div className="h-[400px] w-full border border-border rounded-lg bg-white">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -76,17 +76,17 @@ export function WorkflowDiagram() {
           style: { stroke: 'hsl(222 25% 25%)', strokeWidth: 2 },
         }}
       >
-        <Controls className="bg-card border-border" />
+        <Controls className="bg-white border-border" />
         <MiniMap
           nodeColor="hsl(222 25% 25%)"
-          maskColor="hsl(60 38% 90% / 0.8)"
-          className="bg-card border-border"
+          maskColor="hsl(222 25% 95% / 0.8)"
+          className="bg-white border-border"
         />
         <Background
           variant={BackgroundVariant.Dots}
           gap={12}
           size={1}
-          color="hsl(207 15% 73%)"
+          color="hsl(222 15% 85%)"
         />
       </ReactFlow>
     </div>

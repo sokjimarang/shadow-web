@@ -9,18 +9,19 @@
   --color-popover-foreground: hsl(222 25% 25%);
   --color-primary: hsl(222 25% 25%);
   --color-primary-foreground: hsl(0 0% 98%);
-  --color-secondary: hsl(60 38% 90%);
+  --color-primary-light: hsl(222 25% 85%);
+  --color-primary-lighter: hsl(222 25% 95%);
+  --color-secondary: hsl(222 20% 90%);
   --color-secondary-foreground: hsl(222 25% 25%);
-  --color-muted: hsl(60 38% 90%);
-  --color-muted-foreground: hsl(222 25% 45%);
-  --color-accent: hsl(45 25% 82%);
+  --color-muted: hsl(222 15% 96%);
+  --color-muted-foreground: hsl(222 15% 50%);
+  --color-accent: hsl(207 15% 73%);
   --color-accent-foreground: hsl(222 25% 25%);
   --color-destructive: hsl(0 65% 57%);
   --color-destructive-foreground: hsl(0 0% 98%);
-  --color-border: hsl(207 15% 73%);
-  --color-input: hsl(207 15% 73%);
+  --color-border: hsl(222 15% 85%);
+  --color-input: hsl(222 15% 90%);
   --color-ring: hsl(222 25% 25%);
-  --color-black: hsl(205 26% 20%);
 
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
