@@ -44,12 +44,19 @@ docs/
 
 프로젝트의 컬러 팔레트는 `app/globals.css`의 `@theme` 블록에 정의되어 있습니다:
 
+**Primary 계열 (톤 변화 활용):**
 - **Primary** (`#30364F`): 다크 네이비 - 강조, 주요 텍스트, CTA 버튼
-- **Secondary** (`#F0F0DB`): 베이지/크림 - 배경, 보조 요소
-- **Accent 1** (`#ACBAC4`): 블루 그레이 - 테두리, 입력 필드 (10% 이하 사용)
-- **Accent 2** (`#E1D9BC`): 라이트 베이지 - 악센트 요소 (10% 이하 사용)
+- **Primary Light**: 밝은 톤 - 호버 상태, 약한 강조
+- **Primary Lighter**: 가장 밝은 톤 - 배경, 서브틀한 구분
+
+**기타 컬러:**
+- **Accent** (`#ACBAC4`): 블루 그레이 - 테두리, 입력 필드 (10% 이하 사용)
 - **Destructive** (`#db4848`): 레드 - 에러, 삭제, 경고
-- **Black** (`hsl(205 26% 20%)`): 기존 primary 컬러 - 진한 텍스트가 필요한 경우
+
+**디자인 원칙:**
+- 기본적으로 흰 배경 사용
+- 필요한 곳이 아니면 배경색을 추가하지 않음
+- Primary 컬러의 톤 변화로 계층 표현
 
 ### 60-30-10 룰
 
@@ -84,20 +91,23 @@ UI 요소에 컬러를 적용할 때 다음 비율을 따릅니다:
 ### 사용 예시
 
 ```tsx
-// 좋은 예
-<div className="bg-secondary">  {/* 60%: 배경 */}
-  <nav className="bg-muted">    {/* 30%: 내비게이션 */}
-    <Button className="bg-primary">  {/* 10%: CTA */}
+// 좋은 예 - 미니멀하고 깔끔한 디자인
+<div className="min-h-screen p-8">  {/* 기본 흰 배경 */}
+  <h1 className="text-primary">제목</h1>
+  <Card className="border-border">  {/* 필요한 곳만 카드 사용 */}
+    <Button className="bg-primary">  {/* Primary로 강조 */}
       액션 버튼
     </Button>
-  </nav>
+  </Card>
 </div>
 
-// 나쁜 예
-<div className="bg-primary">  {/* Primary를 배경 전체에 사용 */}
-  <Button className="bg-accent">  {/* 여러 액센트 컬러 혼용 */}
-    버튼
-  </Button>
+// 나쁜 예 - 불필요한 배경색 사용
+<div className="bg-secondary min-h-screen">  {/* 전체 배경에 색상 */}
+  <div className="bg-muted">  {/* 중복된 배경색 */}
+    <Button className="bg-accent">  {/* 여러 컬러 혼용 */}
+      버튼
+    </Button>
+  </div>
 </div>
 ```
 
