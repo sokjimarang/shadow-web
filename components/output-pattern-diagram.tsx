@@ -113,7 +113,7 @@ function resolveIconKey(label: string, app?: string, type?: string) {
 }
 
 const CustomNode = memo(({ data, type }: NodeProps) => {
-  const iconKey = resolveIconKey(data.label ?? '', data.app, type);
+  const iconKey = resolveIconKey(data.label as string ?? '', data.app as string | undefined, type);
 
   return (
     <div
@@ -136,7 +136,7 @@ const CustomNode = memo(({ data, type }: NodeProps) => {
       <span style={iconBaseStyle}>
         <WorkflowIcon name={iconKey} />
       </span>
-      <span style={{ textAlign: 'left', flex: 1 }}>{data.label}</span>
+      <span style={{ textAlign: 'left', flex: 1 }}>{data.label as string}</span>
     </div>
   );
 });
@@ -144,7 +144,7 @@ const CustomNode = memo(({ data, type }: NodeProps) => {
 CustomNode.displayName = 'CustomNode';
 
 const InputNode = memo(({ data, type }: NodeProps) => {
-  const iconKey = resolveIconKey(data.label ?? '', data.app, type);
+  const iconKey = resolveIconKey(data.label as string ?? '', data.app as string | undefined, type);
 
   return (
     <div
@@ -173,7 +173,7 @@ const InputNode = memo(({ data, type }: NodeProps) => {
       >
         <WorkflowIcon name={iconKey} />
       </span>
-      <span style={{ textAlign: 'left', flex: 1 }}>{data.label}</span>
+      <span style={{ textAlign: 'left', flex: 1 }}>{data.label as string}</span>
     </div>
   );
 });
@@ -181,7 +181,7 @@ const InputNode = memo(({ data, type }: NodeProps) => {
 InputNode.displayName = 'InputNode';
 
 const OutputNode = memo(({ data, type }: NodeProps) => {
-  const iconKey = resolveIconKey(data.label ?? '', data.app, type);
+  const iconKey = resolveIconKey(data.label as string ?? '', data.app as string | undefined, type);
 
   return (
     <div
@@ -204,7 +204,7 @@ const OutputNode = memo(({ data, type }: NodeProps) => {
       <span style={iconBaseStyle}>
         <WorkflowIcon name={iconKey} />
       </span>
-      <span style={{ textAlign: 'left', flex: 1 }}>{data.label}</span>
+      <span style={{ textAlign: 'left', flex: 1 }}>{data.label as string}</span>
     </div>
   );
 });
