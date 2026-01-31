@@ -5,6 +5,31 @@
 - 모든 컴포넌트는 함수형 컴포넌트로 작성합니다.
 - 가능한한 기존의 컴포넌트를 확장하거나 변경하여 재사용합니다.
 
+# 문서 폴더 구조
+
+```
+docs/
+├── direction/     # 기획 메인 파일 (PRD, Service Plan 등)
+├── plan/          # Claude plan mode로 생성된 계획안
+└── report/        # 구현 상태, 문제 상황 등 리포트
+```
+
+> **규칙**: 새 문서 생성 시 위 분류에 맞는 폴더에 저장 (훅이 자동으로 목록 업데이트)
+
+### 문서 목록
+
+#### direction (기획)
+- `docs/direction/API_Specification.md`
+- `docs/direction/data_schema.md`
+- `docs/direction/main_service-plan-v1.2.md`
+- `docs/direction/prd.md`
+
+#### plan (계획안)
+- (없음)
+
+#### report (리포트)
+- (없음)
+
 # 상수
 
 - 가능한한 모든 고정값인 숫자, 문자열을 상수로 분리합니다.
