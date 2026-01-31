@@ -23,7 +23,7 @@
   --color-input: hsl(222 15% 90%);
   --color-ring: hsl(222 25% 25%);
 
-  /* Workflow Pattern Graph Colors */
+  /* Behaviour Pattern Graph Colors */
   --color-workflow-bg: hsl(48 29% 91%);
   --color-workflow-node: hsl(222 25% 25%);
   --color-workflow-node-light: hsl(48 29% 85%);
