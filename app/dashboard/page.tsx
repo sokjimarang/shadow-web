@@ -43,13 +43,13 @@ export default function DashboardPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-secondary p-8">
       <div className="max-w-7xl mx-auto space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold">대시보드 UI 테스트</h1>
-            <p className="text-gray-600 mt-2">
+            <h1 className="text-4xl font-bold text-primary">대시보드 UI 테스트</h1>
+            <p className="text-muted-foreground mt-2">
               shadcn/ui + lucide-react + React Flow 통합 예시
             </p>
           </div>
@@ -78,8 +78,8 @@ export default function DashboardPage() {
               <MessageSquare className="w-6 h-6" />
               <TrendingUp className="w-6 h-6" />
               <Bell className="w-6 h-6" />
-              <Check className="w-6 h-6 text-green-500" />
-              <X className="w-6 h-6 text-red-500" />
+              <Check className="w-6 h-6 text-primary" />
+              <X className="w-6 h-6 text-destructive" />
             </div>
           </CardContent>
         </Card>
@@ -92,8 +92,8 @@ export default function DashboardPage() {
               <CardDescription>이번 달 활동</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">1,234</p>
-              <p className="text-sm text-gray-600">전월 대비 +12%</p>
+              <p className="text-3xl font-bold text-primary">1,234</p>
+              <p className="text-sm text-muted-foreground">전월 대비 +12%</p>
             </CardContent>
             <CardFooter>
               <Button variant="outline" className="w-full">
@@ -108,8 +108,8 @@ export default function DashboardPage() {
               <CardDescription>사용자 참여도</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">89%</p>
-              <p className="text-sm text-gray-600">평균 참여 시간: 5분</p>
+              <p className="text-3xl font-bold text-primary">89%</p>
+              <p className="text-sm text-muted-foreground">평균 참여 시간: 5분</p>
             </CardContent>
             <CardFooter>
               <Button variant="outline" className="w-full">
@@ -124,8 +124,8 @@ export default function DashboardPage() {
               <CardDescription>완료된 작업</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="text-3xl font-bold">456</p>
-              <p className="text-sm text-gray-600">목표 대비 92%</p>
+              <p className="text-3xl font-bold text-primary">456</p>
+              <p className="text-sm text-muted-foreground">목표 대비 92%</p>
             </CardContent>
             <CardFooter>
               <Button variant="outline" className="w-full">

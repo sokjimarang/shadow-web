@@ -64,7 +64,7 @@ export function WorkflowDiagram() {
   );
 
   return (
-    <div className="h-[400px] w-full border rounded-lg">
+    <div className="h-[400px] w-full border border-border rounded-lg bg-background">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -72,10 +72,22 @@ export function WorkflowDiagram() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
+        defaultEdgeOptions={{
+          style: { stroke: 'hsl(222 25% 25%)', strokeWidth: 2 },
+        }}
       >
-        <Controls />
-        <MiniMap />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} />
+        <Controls className="bg-card border-border" />
+        <MiniMap
+          nodeColor="hsl(222 25% 25%)"
+          maskColor="hsl(60 38% 90% / 0.8)"
+          className="bg-card border-border"
+        />
+        <Background
+          variant={BackgroundVariant.Dots}
+          gap={12}
+          size={1}
+          color="hsl(207 15% 73%)"
+        />
       </ReactFlow>
     </div>
   );
