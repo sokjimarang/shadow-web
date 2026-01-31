@@ -1,12 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { env, validateEnv } from '@/lib/env'
+import { env } from '@/lib/env'
 import { verifySlackSignature } from '@/lib/slack/verify-signature'
 import { shadowClient } from '@/lib/shadow/client'
 import { slackClient } from '@/lib/slack/client'
 import { createClient } from '@supabase/supabase-js'
 import type { InteractiveQuestionPayload } from '@/types/slack'
-
-validateEnv()
 
 const supabase = createClient(env.supabase.url, env.supabase.anonKey)
 
