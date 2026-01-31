@@ -360,6 +360,68 @@ brew install ngrok
 - URL 변경 시 Slack App 설정도 업데이트 필요
 - ngrok 터널 유지를 위해 터미널 창 유지
 
+### 3. Interactive Messages 사용
+
+Shadow는 사용자와 상호작용이 필요할 때 Interactive Messages를 전송합니다.
+
+#### Interactivity 설정
+
+1. [Slack API Apps](https://api.slack.com/apps) > 앱 선택 > **Interactivity & Shortcuts**
+2. **Interactivity** ON
+3. **Request URL** 입력:
+   ```
+   https://your-domain.com/api/slack/interactions
+   ```
+   (로컬 개발 시: `https://abc123.ngrok.io/api/slack/interactions`)
+
+#### 사용 예시
+
+**연동 포인트 A: Shadow → Slack (질문 전송)**
+
+```typescript
+import { slackClient } from '@/lib/slack'
+
+await slackClient.sendInteractiveQuestion('C01234ABCD', {
+  trigger_type: 'anomaly_detection',
+  confidence: 0.85,
+  question: {
+    title: '평소와 다른 패턴 감지',
+    context: {
+      usual_pattern: 'A→B→C',
+      current_pattern: 'A→D→C',
+    },
+    options: ['의도적', '실수', '도구 제약'],
+    priority: 'medium',
+  },
+  session_id: 'session_20250131_001',
+})
+```
+
+**연동 포인트 B: Slack → Shadow (답변 수신)**
+
+사용자가 버튼을 클릭하면 `/api/slack/interactions` 엔드포인트로 답변이 전송되고, `slack_interaction_answers` 테이블에 저장됩니다.
+
+#### 에이전트 명세서 전송
+
+```typescript
+import { slackClient } from '@/lib/slack'
+
+// 텍스트로 전송 (코드 블록)
+await slackClient.sendAgentSpec({
+  channel: 'C01234ABCD',
+  spec: agentSpecMarkdown,
+  format: 'text',
+})
+
+// 파일로 전송
+await slackClient.sendAgentSpec({
+  channel: 'C01234ABCD',
+  spec: agentSpecMarkdown,
+  format: 'file',
+  filename: 'agent_spec.md',
+})
+```
+
 ## Tailwind CSS v4 사용법
 
 ### 디자인 토큰 정의
