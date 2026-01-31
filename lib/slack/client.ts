@@ -1,6 +1,11 @@
 import { WebClient } from '@slack/web-api'
 import { env } from '@/lib/env'
-import type { SendMessageOptions, SlackBlock } from '@/types/slack'
+import type {
+  SendMessageOptions,
+  SlackBlock,
+  InteractiveQuestionPayload,
+} from '@/types/slack'
+import { buildInteractiveQuestionBlocks } from './block-builder'
 
 export class SlackClient {
   private client: WebClient
@@ -30,6 +35,20 @@ export class SlackClient {
     await this.sendMessage({
       channel,
       text,
+      blocks,
+    })
+  }
+
+  async sendInteractiveQuestion(
+    channel: string,
+    payload: InteractiveQuestionPayload
+  ): Promise<void> {
+    const blocks = buildInteractiveQuestionBlocks(payload)
+    const fallbackText = `${payload.question.title}\n옵션: ${payload.question.options.join(', ')}`
+
+    await this.sendMessage({
+      channel,
+      text: fallbackText,
       blocks,
     })
   }
