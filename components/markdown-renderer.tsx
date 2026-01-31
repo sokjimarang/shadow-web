@@ -40,7 +40,7 @@ function stripAgentSpecSection(markdown: string): string {
     const afterHeading = startIndex + headingMatch[0].length;
     const remaining = markdown.slice(afterHeading);
     const nextHeadingMatch = remaining.match(/^##\s+/m);
-    const endIndex = nextHeadingMatch
+    const endIndex = nextHeadingMatch && nextHeadingMatch.index !== undefined
       ? afterHeading + nextHeadingMatch.index
       : markdown.length;
 
