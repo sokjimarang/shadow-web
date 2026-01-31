@@ -1,9 +1,24 @@
 {
   "permissions": {
     "allow": [
-      "mcp__serena__find_file"
+      "mcp__serena__find_file",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$CLAUDE_PROJECT_DIR\"/.claude/hooks/update-docs-index.sh"
+          }
+        ]
+      }
+    ]
   }
 }
