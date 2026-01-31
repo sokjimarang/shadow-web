@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { env, validateEnv } from '@/lib/env'
 import { verifySlackSignature } from '@/lib/slack/verify-signature'
+import { createClient } from '@supabase/supabase-js'
 import type {
   SlackInteractionPayload,
   InteractiveAnswerPayload,
 } from '@/types/slack'
 
 validateEnv()
+
+const supabase = createClient(env.supabase.url, env.supabase.anonKey)
 
 export async function POST(request: NextRequest) {
   try {
@@ -59,6 +62,22 @@ export async function POST(request: NextRequest) {
         }
 
         console.log('[Interactivity] Answer received:', answerPayload)
+
+        const { error: dbError } = await supabase
+          .from('slack_interaction_answers')
+          .insert({
+            session_id: answerPayload.session_id,
+            selected_option: answerPayload.answer.selected_option,
+            additional_context: answerPayload.answer.additional_context,
+            create_exception_rule: answerPayload.answer.create_exception_rule,
+            answered_at: answerPayload.answered_at,
+            user_id: payload.user.id,
+            raw_payload: payload,
+          })
+
+        if (dbError) {
+          console.error('[Interactivity] Failed to save answer:', dbError)
+        }
 
         return NextResponse.json({ ok: true })
       }
