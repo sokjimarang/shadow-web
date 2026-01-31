@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { env, validateEnv } from '@/lib/env'
 import { verifySlackSignature } from '@/lib/slack/verify-signature'
 import { shadowClient } from '@/lib/shadow/client'
+import { slackClient } from '@/lib/slack/client'
 import { createClient } from '@supabase/supabase-js'
+import type { InteractiveQuestionPayload } from '@/types/slack'
 
 validateEnv()
 
@@ -75,7 +77,7 @@ export async function POST(request: NextRequest) {
           return NextResponse.json({ error: 'Database error' }, { status: 500 })
         }
 
-        // Mock shadow-py API 호출 (백그라운드에서 실행)
+        // Mock shadow-py API 호출 및 interactive 메시지 전송 (백그라운드에서 실행)
         shadowClient
           .analyzePattern([
             {
@@ -85,11 +87,44 @@ export async function POST(request: NextRequest) {
               timestamp: event.ts || new Date().toISOString(),
             },
           ])
-          .then((result) => {
-            console.log('Pattern analysis result:', result)
+          .then(async (result) => {
+            console.log('[Pattern Analysis] Result:', result)
+
+            // 패턴이 감지된 경우 interactive 메시지 전송
+            if (
+              result.simple_patterns.length > 0 ||
+              result.sequence_patterns.length > 0
+            ) {
+              const sessionId = `session_${Date.now()}_${event.user}`
+
+              const questionPayload: InteractiveQuestionPayload = {
+                trigger_type: 'pattern_detection',
+                confidence: 0.85,
+                question: {
+                  title: '반복 패턴 감지됨',
+                  context: {
+                    message: event.text,
+                    patterns_found: result.simple_patterns.length,
+                  },
+                  options: ['의도적', '실수', '도구 제약'],
+                  priority: 'medium',
+                },
+                session_id: sessionId,
+              }
+
+              try {
+                await slackClient.sendInteractiveQuestion(
+                  event.channel || 'unknown',
+                  questionPayload
+                )
+                console.log('[Interactive Message] Sent to channel:', event.channel)
+              } catch (err) {
+                console.error('[Interactive Message] Failed to send:', err)
+              }
+            }
           })
           .catch((err) => {
-            console.error('Pattern analysis failed:', err)
+            console.error('[Pattern Analysis] Failed:', err)
           })
 
         return NextResponse.json({ ok: true })
