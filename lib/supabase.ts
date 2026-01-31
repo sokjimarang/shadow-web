@@ -1,8 +1,9 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
+import type { Database } from '@/types/database'
 
-let supabaseInstance: ReturnType<typeof createClient> | null = null
+let supabaseInstance: SupabaseClient<Database> | null = null
 
-export function getSupabaseClient() {
+export function getSupabaseClient(): SupabaseClient<Database> {
   if (!supabaseInstance) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
@@ -13,15 +14,15 @@ export function getSupabaseClient() {
       )
     }
 
-    supabaseInstance = createClient(supabaseUrl, supabaseAnonKey)
+    supabaseInstance = createClient<Database>(supabaseUrl, supabaseAnonKey)
   }
 
   return supabaseInstance
 }
 
 // 하위 호환성을 위한 export (deprecated)
-export const supabase = new Proxy({} as ReturnType<typeof createClient>, {
+export const supabase = new Proxy({} as ReturnType<typeof createClient<Database>>, {
   get(_target, prop) {
-    return getSupabaseClient()[prop as keyof ReturnType<typeof createClient>]
+    return getSupabaseClient()[prop as keyof ReturnType<typeof createClient<Database>>]
   },
 })
