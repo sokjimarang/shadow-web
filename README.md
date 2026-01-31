@@ -292,13 +292,73 @@ curl -X POST http://localhost:8000/analyze \
 
 ### 2. 로컬 테스트 (ngrok 사용)
 
-```bash
-# ngrok으로 로컬 서버 외부 노출
-ngrok http 3000
+#### ngrok 설치
 
-# ngrok URL을 Slack App 설정의 Request URL에 입력
-# 예: https://abc123.ngrok.io/api/slack/webhook
+```bash
+# macOS
+brew install ngrok
+
+# 또는 https://ngrok.com/download
 ```
+
+#### 테스트 단계
+
+1. **Next.js 개발 서버 실행**
+   ```bash
+   pnpm run dev
+   ```
+
+2. **ngrok으로 로컬 서버 노출**
+   ```bash
+   ngrok http 3000
+   ```
+
+   출력 예시:
+   ```
+   Forwarding  https://abc123.ngrok.io -> http://localhost:3000
+   ```
+
+3. **Slack App Events API 설정**
+   - [Slack API Apps](https://api.slack.com/apps) > 앱 선택 > **Event Subscriptions**
+   - **Enable Events** ON
+   - **Request URL** 입력:
+     ```
+     https://abc123.ngrok.io/api/slack/events
+     ```
+   - URL verification 성공 확인 (✅ Verified)
+
+4. **Subscribe to bot events 추가**
+   - `message.channels` - 공개 채널 메시지
+   - `message.groups` - 비공개 채널 메시지
+   - `message.im` - DM 메시지
+   - `message.mpim` - 그룹 DM 메시지
+   - **Save Changes** 클릭
+
+5. **앱을 워크스페이스에 재설치**
+   - Settings > Install App > **Reinstall to Workspace**
+
+6. **테스트 메시지 전송**
+   - Slack에서 봇이 추가된 채널에 메시지 전송
+   - 터미널에서 로그 확인:
+     ```
+     [Mock] Analyzing pattern for messages: 1
+     Pattern analysis result: { simple_patterns: [...], sequence_patterns: [] }
+     ```
+
+7. **Supabase에서 데이터 확인**
+   ```bash
+   # Supabase Studio 열기
+   supabase status
+   # Studio URL: http://127.0.0.1:54323
+
+   # slack_messages 테이블 확인
+   ```
+
+#### 주의사항
+
+- ngrok 무료 버전은 세션이 종료되면 URL이 변경됨
+- URL 변경 시 Slack App 설정도 업데이트 필요
+- ngrok 터널 유지를 위해 터미널 창 유지
 
 ## Tailwind CSS v4 사용법
 
