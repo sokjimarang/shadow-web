@@ -3,10 +3,8 @@ import { env } from '@/lib/env'
 import { verifySlackSignature } from '@/lib/slack/verify-signature'
 import { shadowClient } from '@/lib/shadow/client'
 import { slackClient } from '@/lib/slack/client'
-import { createClient } from '@supabase/supabase-js'
+import { getSupabaseClient } from '@/lib/supabase'
 import type { InteractiveQuestionPayload } from '@/types/slack'
-
-const supabase = createClient(env.supabase.url, env.supabase.anonKey)
 
 interface SlackEventPayload {
   type: string
@@ -64,6 +62,7 @@ export async function POST(request: NextRequest) {
       // message 이벤트 처리
       if (event.type === 'message' && event.user && event.text) {
         // Supabase에 메시지 저장
+        const supabase = getSupabaseClient()
         const { data, error } = await supabase.from('slack_events').insert({
           event_type: event.type,
           user_id: event.user,

@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { env } from '@/lib/env'
 import { verifySlackSignature } from '@/lib/slack/verify-signature'
-import { createClient } from '@supabase/supabase-js'
+import { getSupabaseClient } from '@/lib/supabase'
 import type {
   SlackInteractionPayload,
   InteractiveAnswerPayload,
 } from '@/types/slack'
-
-const supabase = createClient(env.supabase.url, env.supabase.anonKey)
 
 export async function POST(request: NextRequest) {
   try {
@@ -61,6 +59,7 @@ export async function POST(request: NextRequest) {
 
         console.log('[Interactivity] Answer received:', answerPayload)
 
+        const supabase = getSupabaseClient()
         const { error: dbError } = await supabase
           .from('slack_interaction_answers')
           .insert({
