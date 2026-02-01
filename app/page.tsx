@@ -45,7 +45,7 @@ export default function LandingPage() {
               <CardContent className="p-6">
                 <div className="mb-4 text-2xl">X</div>
                 <h3 className="text-xl font-semibold text-primary">
-                  "어떻게 일하세요?"
+                  &ldquo;어떻게 일하세요?&rdquo;
                 </h3>
                 <p className="mt-2 text-muted-foreground">
                   열린 질문에 대답하기 어렵습니다.
@@ -65,7 +65,7 @@ export default function LandingPage() {
               <CardContent className="p-6">
                 <div className="mb-4 text-2xl">O</div>
                 <h3 className="text-xl font-semibold text-primary">
-                  "이렇게 하신 것 같은데 맞나요?"
+                  &ldquo;이렇게 하신 것 같은데 맞나요?&rdquo;
                 </h3>
                 <p className="mt-2 text-muted-foreground">
                   닫힌 질문에는 쉽게 대답할 수 있습니다.
