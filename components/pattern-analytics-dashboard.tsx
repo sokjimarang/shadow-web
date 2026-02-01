@@ -142,25 +142,18 @@ function StatCard({
   icon: Icon,
   label,
   value,
-  subValue,
 }: {
   icon: React.ElementType;
   label: string;
   value: string | number;
-  subValue?: string;
 }) {
   return (
-    <div className="bg-white rounded-2xl p-5 border border-border">
-      <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-xl bg-primary-lighter">
-          <Icon className="w-5 h-5 text-primary" />
-        </div>
-        <div>
-          <p className="text-xs text-muted-foreground">{label}</p>
-          <p className="text-xl font-bold text-primary">{value}</p>
-          {subValue && <p className="text-xs text-muted-foreground">{subValue}</p>}
-        </div>
+    <div className="bg-white rounded-2xl p-5 border border-border flex flex-col items-center text-center">
+      <div className="p-3 rounded-xl bg-primary-lighter mb-3">
+        <Icon className="w-5 h-5 text-primary" />
       </div>
+      <p className="text-xs text-muted-foreground mb-1">{label}</p>
+      <p className="text-2xl font-bold text-primary">{value}</p>
     </div>
   );
 }
@@ -338,9 +331,12 @@ export function PatternAnalyticsDashboard() {
         <StatCard icon={Activity} label="총 세션" value={`${analyticsData.collection.sessions}회`} />
         <StatCard icon={Layers} label="총 이벤트" value={analyticsData.collection.events.toLocaleString()} />
         <StatCard icon={Clock} label="평균 처리 시간" value={analyticsData.collection.avgTime} />
-        <div className="bg-primary rounded-2xl p-5 text-white">
-          <p className="text-xs text-primary-light">종합 신뢰도</p>
-          <p className="text-3xl font-bold mt-1">{analyticsData.collection.confidence}%</p>
+        <div className="bg-primary rounded-2xl p-5 flex flex-col items-center text-center text-white">
+          <div className="p-3 rounded-xl bg-white/20 mb-3">
+            <CheckCircle2 className="w-5 h-5 text-white" />
+          </div>
+          <p className="text-xs text-primary-light mb-1">종합 신뢰도</p>
+          <p className="text-2xl font-bold">{analyticsData.collection.confidence}%</p>
         </div>
       </div>
 

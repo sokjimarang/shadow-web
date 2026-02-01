@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import Image from 'next/image';
 import { OutputDashboardLayoutLive } from '@/components/output-dashboard-layout-live';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -34,6 +35,9 @@ export default function OutputLivePage() {
     <div className="min-h-screen p-8">
       <div className="mb-8 flex items-start justify-between">
         <div>
+          <Button variant="ghost" size="sm" className="mb-2 -ml-2" asChild>
+            <Link href="/">&larr; 홈으로</Link>
+          </Button>
           <h1 className="text-3xl font-bold text-primary mb-2">
             Shadow Live Dashboard
           </h1>

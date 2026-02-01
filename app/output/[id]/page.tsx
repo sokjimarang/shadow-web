@@ -1,7 +1,9 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Link from 'next/link';
 import Image from 'next/image';
 import { OutputDashboardLayout } from '@/components/output-dashboard-layout';
+import { Button } from '@/components/ui/button';
 import { getOutputById } from '@/constants/mock-outputs';
 
 interface PageProps {
@@ -38,6 +40,9 @@ export default async function OutputPage({ params }: PageProps) {
       {/* Header */}
       <div className="mb-8 flex items-start justify-between">
         <div>
+          <Button variant="ghost" size="sm" className="mb-2 -ml-2" asChild>
+            <Link href="/">&larr; 홈으로</Link>
+          </Button>
           <h1 className="text-3xl font-bold text-primary mb-2">{output.title}</h1>
           <p className="text-sm text-muted-foreground">
             Created at: {new Date(output.createdAt).toLocaleString('ko-KR')}
