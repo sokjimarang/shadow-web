@@ -127,20 +127,52 @@ export function WorkflowDiagram({
       const cy = cyRef.current;
       const layoutInstance = cy.layout(layout);
 
-      layoutInstance.run();
-
-      layoutInstance.on('layoutstop', () => {
+      const handleLayoutStop = () => {
         if (!isInitializedRef.current) {
-          cy.fit(undefined, 50);
-          cy.center();
+          const inputNode = cy.nodes('.input').first();
+
+          if (inputNode.length > 0) {
+            cy.fit(undefined, 100);
+
+            const currentZoom = cy.zoom();
+            const newZoom = currentZoom * 1.92;
+            cy.zoom({
+              level: newZoom,
+            });
+
+            const nodePos = inputNode.position();
+            const containerWidth = cy.width();
+
+            cy.pan({
+              x: containerWidth / 2 - nodePos.x * newZoom,
+              y: 100 - nodePos.y * newZoom,
+            });
+          } else {
+            cy.fit(undefined, 100);
+            cy.center();
+
+            const currentZoom = cy.zoom();
+            cy.zoom({
+              level: currentZoom * 1.92,
+            });
+
+            cy.center();
+          }
+
           isInitializedRef.current = true;
         }
-      });
+      };
+
+      layoutInstance.one('layoutstop', handleLayoutStop);
+      layoutInstance.run();
     }
   }, [layout]);
 
   useEffect(() => {
     if (cyRef.current && elements.length > 0) {
+      if (elements.length > 0 && !cyRef.current.elements().length) {
+        isInitializedRef.current = false;
+      }
       runLayout();
     }
   }, [elements, runLayout]);
@@ -180,11 +212,8 @@ export function WorkflowDiagram({
   const handleReset = () => {
     if (cyRef.current) {
       const cy = cyRef.current;
+      isInitializedRef.current = false;
       runLayout();
-      setTimeout(() => {
-        cy.fit(undefined, 50);
-        cy.center();
-      }, 100);
     }
   };
 
