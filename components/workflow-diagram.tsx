@@ -138,6 +138,7 @@ export function WorkflowDiagram({
             const newZoom = currentZoom * 1.92;
             cy.zoom({
               level: newZoom,
+              renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 },
             });
 
             const nodePos = inputNode.position();
@@ -154,6 +155,7 @@ export function WorkflowDiagram({
             const currentZoom = cy.zoom();
             cy.zoom({
               level: currentZoom * 1.92,
+              renderedPosition: { x: cy.width() / 2, y: cy.height() / 2 },
             });
 
             cy.center();
