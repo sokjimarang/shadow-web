@@ -118,7 +118,7 @@ export default function LandingPage() {
                 패턴 발견
               </h3>
               <p className="mt-2 text-sm text-muted-foreground">
-                3회 반복되는 패턴을
+                30회 이상 반복되는 패턴을
                 <br />
                 자동으로 감지합니다
               </p>
