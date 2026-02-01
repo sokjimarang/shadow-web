@@ -84,7 +84,7 @@ export function useShadowLive(): UseShadowLiveReturn {
   useEffect(() => {
     fetchData();
 
-    const interval = setInterval(fetchData, 1000);
+    const interval = setInterval(fetchData, 2000);
 
     return () => clearInterval(interval);
   }, [fetchData]);
