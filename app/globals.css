@@ -73,7 +73,46 @@
 }
 
 @layer utilities {
-  /* 커스텀 유틸리티 클래스 */
+  /* Skeleton 애니메이션 */
+  @keyframes skeleton-wave {
+    0% {
+      background-position: 200% 50%;
+    }
+    100% {
+      background-position: -200% 50%;
+    }
+  }
+
+  @keyframes skeleton-pulse {
+    0%, 100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+
+  .animate-skeleton-wave {
+    animation: skeleton-wave 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .animate-skeleton-pulse {
+    animation: skeleton-pulse 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  }
+
+  .bg-skeleton-gradient {
+    background: linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.08) 0%,
+      rgba(0, 0, 0, 0.08) 40%,
+      rgba(0, 0, 0, 0.05) 50%,
+      rgba(0, 0, 0, 0.08) 60%,
+      rgba(0, 0, 0, 0.08) 100%
+    );
+    background-size: 200% 100%;
+  }
+
+  /* 기존 shimmer 애니메이션 */
   @keyframes shimmer {
     0% {
       background-position: -200% 0;

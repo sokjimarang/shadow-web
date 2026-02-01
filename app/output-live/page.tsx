@@ -8,6 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useShadowLive } from '@/hooks/use-shadow-live';
+import { SkeletonDashboard } from '@/components/skeletons/skeleton-dashboard';
 
 export default function OutputLivePage() {
   const {
@@ -79,23 +80,7 @@ export default function OutputLivePage() {
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {isAnalyzing ? (
-              <div className="py-8 space-y-4">
-                <p className="text-center text-lg font-medium text-primary">
-                  분석중
-                </p>
-                <div className="relative h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className="absolute inset-0 rounded-full animate-shimmer"
-                    style={{
-                      background:
-                        'linear-gradient(90deg, transparent, #FAB95B, transparent)',
-                      backgroundSize: '200% 100%',
-                    }}
-                  />
-                </div>
-              </div>
-            ) : (
+            {!isAnalyzing && (
               <>
                 <div className="flex items-center gap-2">
                   <label className="text-sm font-medium">녹화 시간 (초):</label>
@@ -147,8 +132,10 @@ export default function OutputLivePage() {
         </Card>
       </div>
 
-      {output ? (
-        <OutputDashboardLayoutLive output={output} />
+      {isAnalyzing ? (
+        <SkeletonDashboard />
+      ) : output ? (
+        <OutputDashboardLayoutLive output={output} isLoading={false} />
       ) : (
         <Card>
           <CardContent className="py-12 text-center">

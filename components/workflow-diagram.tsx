@@ -22,6 +22,7 @@ export function WorkflowDiagram({
   nodes,
   edges,
   className = '',
+  isLive = false,
 }: WorkflowDiagramProps) {
   const cyRef = useRef<cytoscape.Core | null>(null);
   const isInitializedRef = useRef(false);
@@ -172,12 +173,12 @@ export function WorkflowDiagram({
 
   useEffect(() => {
     if (cyRef.current && elements.length > 0) {
-      if (elements.length > 0 && !cyRef.current.elements().length) {
+      if (isLive || (elements.length > 0 && !cyRef.current.elements().length)) {
         isInitializedRef.current = false;
       }
       runLayout();
     }
-  }, [elements, runLayout]);
+  }, [elements, runLayout, isLive]);
 
   const handleZoomIn = () => {
     if (cyRef.current) {
