@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { WorkflowDiagram } from './workflow-diagram';
 import { MarkdownRenderer } from './markdown-renderer';
+import { PatternAnalyticsDashboard } from './pattern-analytics-dashboard';
 import type { Output } from '@/types';
 
 interface OutputDashboardLayoutProps {
@@ -69,15 +70,19 @@ export function OutputDashboardLayout({ output }: OutputDashboardLayoutProps) {
         </Card>
       </div>
 
-      {/* 우측: Markdown */}
+      {/* 우측: Analytics Dashboard */}
       <div className="space-y-6">
-        {/* Markdown 문서 */}
         <Card>
           <CardHeader>
             <CardTitle>Documentation</CardTitle>
           </CardHeader>
           <CardContent>
-            <MarkdownRenderer content={markdown} />
+            {/* 데모 시나리오(id: 1)는 시각화된 대시보드 표시 */}
+            {output.id === '1' ? (
+              <PatternAnalyticsDashboard />
+            ) : (
+              <MarkdownRenderer content={markdown} />
+            )}
           </CardContent>
         </Card>
       </div>
